@@ -61,6 +61,12 @@ def _save_figure(filename: str) -> None:
     print(f"  Saved: {path}")
 
 
+# Personal attributes excluded from every model. Using marital status or
+# number of children to set pay or decide hiring would be discriminatory,
+# so they are dropped right after loading.
+EXCLUDED_ATTRIBUTES = ["Hijos", "Casado"]
+
+
 # ─── PART 1: SALARY PREDICTION (REGRESSION) ───────────────────────────────────
 
 
@@ -71,13 +77,13 @@ def load_salary_data(filepath: str = "hr_data.csv") -> pd.DataFrame:
     The dataset contains 1,000 HR records with the following columns:
         Experiencia  – years of work experience (continuous)
         Posicion     – job level: Analista, Coordinador, Gerente (categorical)
-        Hijos        – number of children (integer)
-        Casado       – marital status, 1 = married (binary)
+        Hijos        – number of children (excluded from modelling)
+        Casado       – marital status (excluded from modelling)
         Educacion    – highest qualification: Bachillerato, Licenciatura,
                        Posgrado (categorical)
         Salario      – annual salary in local currency (target)
     """
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(filepath).drop(columns=EXCLUDED_ATTRIBUTES)
     print(f"Loaded salary dataset: {df.shape[0]:,} rows × {df.shape[1]} columns")
     print(df.head().to_string())
     return df
@@ -237,7 +243,7 @@ def load_hiring_data(filepath: str = "hr_data_validation.csv") -> pd.DataFrame:
     Extends the salary dataset with a binary target column:
         Contratado — 1 = hired, 0 = not hired
     """
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(filepath).drop(columns=EXCLUDED_ATTRIBUTES)
     print(f"\nLoaded hiring dataset: {df.shape[0]:,} rows × {df.shape[1]} columns")
     print(df.head().to_string())
     return df
